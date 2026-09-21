@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { checkAuthorisation, formatBytes, uploadItem } from './lib/upload'
-  import type { IUploadItem } from './lib/types'
-  import Timeline from './lib/Timeline.svelte'
-  import IconButton from '@smui/button'
-  import LinearProgress from '@smui/linear-progress'
+  import { checkAuthorisation, formatBytes, uploadItem } from './lib/upload';
+  import type { IUploadItem } from './lib/types';
+  // import Timeline from './lib/Timeline.svelte';
+  import IconButton from '@smui/button';
+  import LinearProgress from '@smui/linear-progress';
+  import SvgIcon from '@jamescoyle/svelte-icon';
+  import { mdiImage, mdiVideo } from '@mdi/js';
+  import { Timeline, TimelineItem } from "flowbite-svelte";
 
   const uploadSteps = [
     { title: 'Choose your memories', description: 'Add photos and videos from the celebration', opposite: 'Step 1', color: 'primary' as const },
@@ -67,7 +70,7 @@
     <p class="eyebrow">Thank you for celebrating with us</p>
     <p class="intro">Please share all your lovely <b>photos</b> and <b>videos</b> from the celebration for the couple to keep.</p>
   </section>
-  <section id="upload-panel" aria-labelledby="upload-title">
+  <section id="upload-panel" class="upload-layout" aria-labelledby="upload-title">
     <aside>
       <Timeline items={uploadSteps} />
     </aside>
@@ -93,7 +96,13 @@
       {/if}
       <div class="upload-list" aria-live="polite">
         {#each items as item (item.id)}
-          <div class="file-row {item.status}"><div class="file-type">{item.file.type.startsWith('video/') ? '▶' : '▧'}</div><div class="file-meta"><strong>{item.file.name}</strong><span>{item.status === 'uploading' ? `${item.progress}% uploading` : item.message}</span>{#if item.status === 'uploading'}<LinearProgress progress={item.progress / 100} />{/if}</div>{#if item.status === 'queued'}<IconButton class="remove-file" type="button" onclick={() => removeFile(item.id)} aria-label={`Remove ${item.file.name}`}>×</IconButton>{:else}<span class="file-state">{item.status === 'complete' ? '✓' : item.status === 'error' ? '!' : `${item.progress}%`}</span>{/if}</div>
+          <div class="file-row {item.status}"><div class="file-type">
+          {#if item.file.type.startsWith('video/')}
+            <SvgIcon type="mdi" path={mdiVideo}></SvgIcon>
+          {:else}
+            <SvgIcon type="mdi" path={mdiImage}></SvgIcon>
+          {/if}
+          </div><div class="file-meta"><strong>{item.file.name}</strong><span>{item.status === 'uploading' ? `${item.progress}% uploading` : item.message}</span>{#if item.status === 'uploading'}<LinearProgress progress={item.progress / 100} />{/if}</div>{#if item.status === 'queued'}<IconButton class="remove-file" type="button" onclick={() => removeFile(item.id)} aria-label={`Remove ${item.file.name}`}>×</IconButton>{:else}<span class="file-state">{item.status === 'complete' ? '✓' : item.status === 'error' ? '!' : `${item.progress}%`}</span>{/if}</div>
         {/each}
       </div>
       <button class="primary-button" type="button" disabled={!queuedCount || isUploading} on:click={uploadFiles}>Upload selected files</button>
