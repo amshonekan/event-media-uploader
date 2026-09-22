@@ -1,7 +1,7 @@
-import { createHmac, timingSafeEqual } from 'node:crypto';
 import { type Request, type Response, Router } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 import { google } from 'googleapis';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 const authCookieName = 'raimi_media_upload_access';
 const authCookieMaxAge = 72 * 60 * 60;
@@ -77,7 +77,9 @@ async function createUploadSession(
   >,
   response: Response<UploadSessionResponseBody>,
 ) {
+  console.log('hi');
   const { name, size, mimeType, passcode } = request.body;
+  console.log({ request, body: request.body });
   const authorised = isAuthorised(request);
   if (
     process.env.UPLOAD_PASSCODE &&
@@ -87,6 +89,7 @@ async function createUploadSession(
     response.status(401).json({ error: 'Enter the event code to upload.' });
     return;
   }
+  console.log('here');
   if (
     !name ||
     typeof size !== 'number' ||
@@ -112,11 +115,11 @@ async function createUploadSession(
     });
     return;
   }
-
   try {
     const auth = createGoogleAuth();
     const client = await auth.getClient();
     const headers = await client.getRequestHeaders();
+    console.log({ request, response, auth, client, headers });
     const sessionResponse = await fetch(
       'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true',
       {
