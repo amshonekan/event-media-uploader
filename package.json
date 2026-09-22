@@ -13,7 +13,10 @@
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.json",
     "lint": "biome ci .",
     "lint:error": "biome ci . --diagnostic-level=error",
-    "lint:fix": "biome check . --fix"
+    "lint:fix": "biome check . --fix",
+    "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
+    "smui-theme-light": "smui-theme compile public/smui.css -i src/theme",
+    "smui-theme-dark": "smui-theme compile public/smui-dark.css -i src/theme/dark"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.6",
@@ -23,6 +26,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^24.13.3",
     "concurrently": "^9.2.1",
+    "smui-theme": "^9.0.4",
     "svelte": "^5.57.0",
     "svelte-check": "^4.7.6",
     "tsx": "^4.23.15",
@@ -32,12 +36,16 @@
   "dependencies": {
     "@jamescoyle/svelte-icon": "^0.1.1",
     "@smui/button": "9.0.2",
+    "@smui/common": "^9.0.2",
+    "@smui/icon-button": "^9.0.2",
     "@smui/linear-progress": "^9.0.2",
+    "@smui/textfield": "9.0.2",
     "dotenv": "^18.0.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "flowbite-svelte": "^1.33.1",
     "googleapis": "^181.0.0",
-    "svelte": "^5.38.7"
+    "svelte": "^5.38.7",
+    "svelte-material-ui": "^9.0.4"
   }
 }

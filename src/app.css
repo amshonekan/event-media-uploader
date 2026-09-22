@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
 
 :root {
-  font-family: "DM Sans", sans-serif;
+  font-family: 'DM Sans', sans-serif;
   color: #17221e;
   background: #f2eee7;
   font-synthesis: none;
@@ -58,7 +58,7 @@ button {
   border-radius: 50%;
   background: #dd785d;
   color: #fff9f1;
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
   font-size: 16px;
 }
 .live-pill {
@@ -77,11 +77,10 @@ button {
   box-shadow: 0 0 0 4px #dbe7d9;
 }
 .hero {
-  max-width: 700px;
   margin: clamp(70px, 11vh, 130px) 0 62px;
 }
 .eyebrow {
-  margin: 0 0 15px;
+  margin: 0;
   color: #bd654e;
   text-transform: uppercase;
   letter-spacing: 0.18em;
@@ -95,7 +94,7 @@ h3 {
   font-weight: 500;
 }
 h1 {
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
   font-size: clamp(48px, 7vw, 92px);
   line-height: 0.97;
   letter-spacing: -0.04em;
@@ -105,7 +104,6 @@ h1 em {
   color: #bd654e;
 }
 .intro {
-  max-width: 450px;
   margin: 25px 0 0;
   color: #657168;
   font-size: 16px;
@@ -130,14 +128,13 @@ h1 em {
   margin-bottom: 26px;
 }
 h2 {
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
   font-size: 31px;
   letter-spacing: -0.02em;
 }
 .file-count {
   color: #839087;
   font-size: 12px;
-  padding-top: 5px;
 }
 .dropzone {
   min-height: 230px;
@@ -299,7 +296,7 @@ h2 {
   margin-bottom: 12px;
 }
 .info-rail h3 {
-  font-family: "Playfair Display", serif;
+  font-family: 'Playfair Display', serif;
   font-size: 25px;
   color: #263d32;
 }
@@ -318,6 +315,12 @@ h2 {
   margin-top: auto;
   padding-top: 22px;
   font-size: 11px;
+}
+.media-drop-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 @media (max-width: 720px) {
   .page-shell {
