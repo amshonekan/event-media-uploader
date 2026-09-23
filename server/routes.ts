@@ -77,19 +77,16 @@ async function createUploadSession(
   >,
   response: Response<UploadSessionResponseBody>,
 ) {
-  console.log('hi');
   const { name, size, mimeType, passcode } = request.body;
-  console.log({ request, body: request.body });
   const authorised = isAuthorised(request);
   if (
     process.env.UPLOAD_PASSCODE &&
     !authorised &&
-    passcode !== process.env.UPLOAD_PASSCODE
+    !safeEqual(passcode ?? '', process.env.UPLOAD_PASSCODE)
   ) {
     response.status(401).json({ error: 'Enter the event code to upload.' });
     return;
   }
-  console.log('here');
   if (
     !name ||
     typeof size !== 'number' ||
@@ -116,20 +113,21 @@ async function createUploadSession(
     return;
   }
   try {
-    const auth = createGoogleAuth();
-    const client = await auth.getClient();
-    const headers = await client.getRequestHeaders();
-    console.log({ request, response, auth, client, headers });
+    const client = await createGoogleAuthClient();
+    // getRequestHeaders() returns a Headers instance, not a plain object, so it must be merged via the Headers API
+    const headers = new Headers(await client.getRequestHeaders());
+    headers.set('Content-Type', 'application/json; charset=UTF-8');
+    headers.set('X-Upload-Content-Type', mimeType);
+    headers.set('X-Upload-Content-Length', String(size));
+
+    if (request.headers.origin) {
+      headers.set('Origin', request.headers.origin);
+    }
     const sessionResponse = await fetch(
       'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true',
       {
         method: 'POST',
-        headers: {
-          ...headers,
-          'Content-Type': 'application/json; charset=UTF-8',
-          'X-Upload-Content-Type': mimeType,
-          'X-Upload-Content-Length': String(size),
-        },
+        headers,
         body: JSON.stringify({
           name: sanitiseName(name),
           parents: [process.env.GOOGLE_DRIVE_FOLDER_ID],
@@ -184,7 +182,7 @@ function setAuthorisationCookie(response: Response) {
 }
 
 function signToken(value: string) {
-  const secret = process.env.AUTH_COOKIE_SECRET || process.env.UPLOAD_PASSCODE;
+  const secret = process.env.AUTH_COOKIE_SECRET;
   if (!secret) {
     throw new Error(
       'AUTH_COOKIE_SECRET is required when upload authentication is enabled.',
@@ -211,20 +209,32 @@ function parseCookies(header: string) {
   );
 }
 
-function createGoogleAuth() {
-  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
-    return new google.auth.GoogleAuth({
-      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
-      scopes: ['https://www.googleapis.com/auth/drive.file'],
+async function createGoogleAuthClient() {
+  // Service accounts have no Drive storage quota of their own, so a real account
+  // via OAuth refresh token is required for uploads to land in a personal folder.
+  if (process.env.GOOGLE_OAUTH_REFRESH_TOKEN) {
+    const client = new google.auth.OAuth2(
+      process.env.GOOGLE_OAUTH_CLIENT_ID,
+      process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+    );
+    client.setCredentials({
+      refresh_token: process.env.GOOGLE_OAUTH_REFRESH_TOKEN,
     });
+    return client;
   }
-  return new google.auth.GoogleAuth({
-    credentials: {
-      client_email: process.env.GOOGLE_CLIENT_EMAIL,
-      private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    },
-    scopes: ['https://www.googleapis.com/auth/drive.file'],
-  });
+  const auth = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+    ? new google.auth.GoogleAuth({
+        credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON),
+        scopes: ['https://www.googleapis.com/auth/drive.file'],
+      })
+    : new google.auth.GoogleAuth({
+        credentials: {
+          client_email: process.env.GOOGLE_CLIENT_EMAIL,
+          private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+        },
+        scopes: ['https://www.googleapis.com/auth/drive.file'],
+      });
+  return auth.getClient();
 }
 
 function sanitiseName(name: string) {

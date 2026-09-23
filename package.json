@@ -40,12 +40,15 @@
     "@smui/common": "^9.0.2",
     "@smui/icon-button": "^9.0.2",
     "@smui/linear-progress": "^9.0.2",
+    "@smui/paper": "9.0.2",
+    "@smui/snackbar": "^9.0.2",
     "@smui/textfield": "9.0.2",
     "dotenv": "^18.0.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
     "flowbite-svelte": "^1.33.1",
     "googleapis": "^181.0.0",
+    "helmet": "^8.3.0",
     "svelte": "^5.38.7",
     "svelte-material-ui": "^9.0.4"
   }

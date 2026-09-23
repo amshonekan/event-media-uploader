@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cormorant+Infant:ital,wght@0,300..700;1,300..700&family=Crimson+Pro:ital,wght@0,200..900;1,200..900&family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Noto+Music&family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Noto+Sans+Mono:wght@100..900&family=Noto+Sans+Symbols+2&family=Noto+Sans+Symbols:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Playfair:ital,opsz,wght@0,5..1200,300..900;1,5..1200,300..900&family=Poiret+One&family=Public+Sans:ital,wght@0,100..900;1,100..900&family=Roboto+Flex:opsz,wght,XOPQ,XTRA,YOPQ,YTDE,YTFI,YTLC,YTUC@8..144,100..1000,96,468,79,-203,738,514,712&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Unica+One&display=swap');
 
 :root {
   font-family: 'DM Sans', sans-serif;
@@ -14,8 +15,13 @@
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at 75% 0%, #e4eee3 0, transparent 34rem), #f2eee7;
+  background: #f2eee7;
+  color: #333333;
+}
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 button,
 input {
@@ -37,12 +43,12 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #68766d;
+  color: rgba(51, 51, 51, 0.6);
   font-size: 13px;
   letter-spacing: 0.02em;
 }
 .brand {
-  color: #17221e;
+  color: #333333;
   text-decoration: none;
   font-weight: 600;
   font-size: 17px;
@@ -77,14 +83,17 @@ button {
   box-shadow: 0 0 0 4px #dbe7d9;
 }
 .hero {
-  margin: clamp(70px, 11vh, 130px) 0 62px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 .eyebrow {
   margin: 0;
   color: #bd654e;
   text-transform: uppercase;
   letter-spacing: 0.18em;
-  font-weight: 600;
+  font-weight: 800;
   font-size: 10px;
 }
 h1,
@@ -92,6 +101,7 @@ h2,
 h3 {
   margin: 0;
   font-weight: 500;
+  color: rgba(51, 51, 51, 0.9);
 }
 h1 {
   font-family: 'Playfair Display', serif;
@@ -104,7 +114,7 @@ h1 em {
   color: #bd654e;
 }
 .intro {
-  margin: 25px 0 0;
+  margin: 0;
   color: #657168;
   font-size: 16px;
   line-height: 1.6;
@@ -116,10 +126,14 @@ h1 em {
   align-items: end;
 }
 .upload-panel {
-  background: rgba(255, 252, 246, 0.72);
+  background: #efebe9;
   border: 1px solid #ddd9cf;
   padding: clamp(22px, 4vw, 40px);
   box-shadow: 16px 18px 0 rgba(214, 203, 189, 0.36);
+}
+#completed-panel h2 {
+  font-size: 20px;
+  margin-bottom: 16px;
 }
 .panel-heading {
   display: flex;
@@ -134,10 +148,11 @@ h2 {
 }
 .file-count {
   color: #839087;
+  font-weight: 600;
   font-size: 12px;
 }
 .dropzone {
-  min-height: 230px;
+  min-height: 50svh;
   border: 1px dashed #b7c3b5;
   background: #eef3ea;
   display: flex;
@@ -174,7 +189,7 @@ h2 {
 }
 .passcode-field .mdc-text-field {
   width: 100%;
-  background: #fffaf3;
+  background: #fffcf9;
 }
 .passcode-field .mdc-text-field--outlined {
   --mdc-theme-primary: #668c6b;
@@ -190,7 +205,7 @@ h2 {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: #fffaf3;
+  background: #fffcf9;
   color: #bd654e;
   font-size: 27px;
   margin-bottom: 8px;
@@ -205,8 +220,9 @@ h2 {
   align-items: center;
   gap: 11px;
   padding: 9px 11px;
-  background: #f8f4ed;
-  border: 1px solid #e4dfd6;
+  background: #fffcf9;
+  border: 1px solid #c7c0b4;
+  border-radius: 16px;
   min-width: 0;
 }
 .file-type {
@@ -285,6 +301,12 @@ h2 {
 .status-message.error {
   color: #bd654e;
 }
+.mdc-snackbar.success .mdc-snackbar__surface {
+  background: #4f8059;
+}
+.mdc-snackbar.error .mdc-snackbar__surface {
+  background: #bd654e;
+}
 .info-rail {
   padding-top: 14px;
   color: #657168;
@@ -328,9 +350,6 @@ h2 {
   }
   .live-pill {
     display: none;
-  }
-  .hero {
-    margin: 80px 0 44px;
   }
   .upload-layout {
     grid-template-columns: 1fr;
