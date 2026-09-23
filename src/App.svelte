@@ -102,18 +102,6 @@
   content="110580447603967567909.apps.googleusercontent.com"
 />
 
-<link rel="stylesheet" href="node_modules/svelte-material-ui/bare.css" />
-<link
-  rel="stylesheet"
-  href="node_modules/svelte-material-ui/themes/muted.css"
-  media="(prefers-color-scheme: light)"
-/>
-<link
-  rel="stylesheet"
-  href="node_modules/svelte-material-ui/themes/muted-dark.css"
-  media="screen and (prefers-color-scheme: dark)"
-/>
-
 <svelte:head>
   <meta
     name="description"
