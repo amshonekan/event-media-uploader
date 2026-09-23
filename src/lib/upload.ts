@@ -1,5 +1,11 @@
 import type { ISession, IUploadItem } from './types';
 
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
+
+function getApiUrl(path: string) {
+  return `${apiBaseUrl}${path}`;
+}
+
 export async function uploadItem(
   item: IUploadItem,
   passcode: string,
@@ -10,7 +16,7 @@ export async function uploadItem(
     throw new Error('This file is over the 2 GB limit.');
   }
 
-  const sessionResponse = await fetch('/api/uploads/session', {
+  const sessionResponse = await fetch(getApiUrl('/api/uploads/session'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -51,7 +57,7 @@ export async function uploadItem(
 }
 
 export async function checkAuthorisation() {
-  const response = await fetch('/api/uploads/status');
+  const response = await fetch(getApiUrl('/api/uploads/status'));
   if (!response.ok) {
     return false;
   }
