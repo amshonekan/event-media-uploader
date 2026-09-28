@@ -2,11 +2,11 @@ import 'dotenv/config';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
+import serverless from 'serverless-http';
 
-import uploadsRouter from './routes.js';
+import uploadsRouter from '../../server/routes.js';
 
 const app = express();
-const port = Number(process.env.PORT ?? 8787);
 
 app.set('trust proxy', 1);
 app.use(helmet());
@@ -22,6 +22,4 @@ app.use(
 );
 app.use('/api', uploadsRouter);
 
-app.listen(port, () =>
-  console.log(`Upload API listening on http://localhost:${port}`),
-);
+export const handler = serverless(app);

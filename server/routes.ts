@@ -1,10 +1,6 @@
 import { type Request, type Response, Router } from 'express';
 import type { ParamsDictionary } from 'express-serve-static-core';
 import { google } from 'googleapis';
-import { createHmac, timingSafeEqual } from 'node:crypto';
-
-const authCookieName = 'raimi_media_upload_access';
-const authCookieMaxAge = 72 * 60 * 60;
 const maxFileSize = Number(
   process.env.MAX_FILE_SIZE_BYTES ?? 2 * 1024 * 1024 * 1024,
 );
@@ -13,37 +9,8 @@ const allowedMimeTypes =
 
 const router = Router();
 
-export interface ConfigResponse {
-  configured: boolean;
-  maxFileSizeBytes: number;
-}
-router.get(
-  '/config',
-  (_request: Request, response: Response<ConfigResponse>) => {
-    response.json({
-      configured: Boolean(process.env.GOOGLE_DRIVE_FOLDER_ID),
-      maxFileSizeBytes: maxFileSize,
-    });
-  },
-);
-
-export interface UploadStatusResponse {
-  required: boolean;
-  authorised: boolean;
-}
-router.get(
-  '/uploads/status',
-  (request: Request, response: Response<UploadStatusResponse>) => {
-    response.json({
-      required: Boolean(process.env.UPLOAD_PASSCODE),
-      authorised: isAuthorised(request),
-    });
-  },
-);
-
 export interface UploadSessionResponse {
   uploadUrl: string;
-  authorised: boolean;
 }
 export interface ErrorResponse {
   error: string;
@@ -53,7 +20,6 @@ export interface UploadSessionRequest {
   name?: string;
   size?: number;
   mimeType?: string;
-  passcode?: string;
 }
 router.post(
   '/uploads/session',
@@ -77,16 +43,7 @@ async function createUploadSession(
   >,
   response: Response<UploadSessionResponseBody>,
 ) {
-  const { name, size, mimeType, passcode } = request.body;
-  const authorised = isAuthorised(request);
-  if (
-    process.env.UPLOAD_PASSCODE &&
-    !authorised &&
-    !safeEqual(passcode ?? '', process.env.UPLOAD_PASSCODE)
-  ) {
-    response.status(401).json({ error: 'Enter the event code to upload.' });
-    return;
-  }
+  const { name, size, mimeType } = request.body;
   if (
     !name ||
     typeof size !== 'number' ||
@@ -141,72 +98,13 @@ async function createUploadSession(
     if (!uploadUrl) {
       throw new Error('Google Drive did not return an upload URL.');
     }
-    if (process.env.UPLOAD_PASSCODE && !authorised) {
-      setAuthorisationCookie(response);
-    }
-    response.json({ uploadUrl, authorised: true });
+    response.json({ uploadUrl });
   } catch (error) {
     console.error('Could not create Drive upload session:', error);
     response
       .status(502)
       .json({ error: 'Could not connect to storage. Check the server setup.' });
   }
-}
-
-function isAuthorised(request: Request) {
-  if (!process.env.UPLOAD_PASSCODE) {
-    return true;
-  }
-  const token = parseCookies(request.headers.cookie ?? '')[authCookieName];
-  if (!token) {
-    return false;
-  }
-  const [expires, signature] = token.split('.');
-  if (
-    !expires ||
-    !signature ||
-    Number(expires) < Math.floor(Date.now() / 1000)
-  ) {
-    return false;
-  }
-  return safeEqual(signature, signToken(expires));
-}
-
-function setAuthorisationCookie(response: Response) {
-  const expires = String(Math.floor(Date.now() / 1000) + authCookieMaxAge);
-  const secure = process.env.NODE_ENV === 'production' ? '; Secure' : '';
-  response.setHeader(
-    'Set-Cookie',
-    `${authCookieName}=${expires}.${signToken(expires)}; Max-Age=${authCookieMaxAge}; Path=/; HttpOnly; SameSite=Lax${secure}`,
-  );
-}
-
-function signToken(value: string) {
-  const secret = process.env.AUTH_COOKIE_SECRET;
-  if (!secret) {
-    throw new Error(
-      'AUTH_COOKIE_SECRET is required when upload authentication is enabled.',
-    );
-  }
-  return createHmac('sha256', secret).update(value).digest('base64url');
-}
-
-function safeEqual(left: string, right: string) {
-  const leftBuffer = Buffer.from(left);
-  const rightBuffer = Buffer.from(right);
-  return (
-    leftBuffer.length === rightBuffer.length &&
-    timingSafeEqual(leftBuffer, rightBuffer)
-  );
-}
-
-function parseCookies(header: string) {
-  return Object.fromEntries(
-    header
-      .split(';')
-      .map((part) => part.trim().split('=').map(decodeURIComponent))
-      .filter(([key, value]) => key && value),
-  );
 }
 
 async function createGoogleAuthClient() {

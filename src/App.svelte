@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { IUploadItem } from './lib/types';
-  import { checkAuthorisation, formatBytes, uploadItem } from './lib/upload';
+  import { formatBytes, uploadItem } from './lib/upload';
   // @ts-expect-error - no type declarations available for this module
   import SvgIcon from '@jamescoyle/svelte-icon';
   import { mdiClose, mdiImage, mdiUploadMultiple, mdiVideo } from '@mdi/js';
@@ -9,19 +9,12 @@
   import LinearProgress from '@smui/linear-progress';
   import Paper from '@smui/paper';
   import Snackbar, { Actions, Label } from '@smui/snackbar';
-  import TextField from '@smui/textfield';
 
   let items: IUploadItem[] = [];
-  let passcode = '';
   let statusText = '';
   let statusKind = '';
   let isUploading = false;
-  let isAuthorised = false;
   let snackbar: Snackbar;
-
-  checkAuthorisation().then((authorised) => {
-    isAuthorised = authorised;
-  });
 
   $: queuedCount = items.filter(
     (item) => item.status === 'queued' || item.status === 'error',
@@ -62,14 +55,8 @@
       updateItem(item.id, { status: 'uploading', progress: 0 });
 
       try {
-        await uploadItem(
-          item,
-          passcode.trim(),
-          (progress) => updateItem(item.id, { progress }),
-          () => {
-            isAuthorised = true;
-            passcode = '';
-          },
+        await uploadItem(item, (progress) =>
+          updateItem(item.id, { progress }),
         );
         updateItem(item.id, { status: 'complete', progress: 100 });
       } catch (error) {
@@ -153,17 +140,6 @@
           <span>or drag and drop them here</span>
           <small>JPG, PNG, HEIC, MP4 and MOV · up to 2 GB each</small>
         </label>
-        {#if isAuthorised}
-          <p class="authorised-note">✓ This device is verified for the event</p>
-        {:else}
-          <TextField
-            label="Event code"
-            variant="outlined"
-            class="shaped-outlined"
-            bind:value={passcode}
-            required
-          ></TextField>
-        {/if}
         <Button
           variant="raised"
           touch

@@ -11,5 +11,4 @@ export interface IUploadItem {
 export interface ISession {
   uploadUrl?: string;
   error?: string;
-  authorised?: boolean;
 }
