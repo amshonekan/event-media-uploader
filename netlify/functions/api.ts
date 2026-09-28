@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import helmet from 'helmet';
 import serverless from 'serverless-http';
 
@@ -18,6 +18,13 @@ app.use(
     limit: 120,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
+    keyGenerator: (request) => {
+      const clientIp =
+        request.get('x-nf-client-connection-ip') ??
+        request.ip ??
+        request.socket.remoteAddress;
+      return clientIp ? ipKeyGenerator(clientIp) : 'unknown';
+    },
   }),
 );
 app.use('/api', uploadsRouter);
