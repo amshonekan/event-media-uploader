@@ -136,7 +136,4 @@
     text-align: left;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .dot { border-color: var(--bg, #16171d); }
-  }
 </style>

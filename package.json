@@ -14,9 +14,8 @@
     "lint": "biome ci .",
     "lint:error": "biome ci . --diagnostic-level=error",
     "lint:fix": "biome check . --fix",
-    "prepare": "npm run smui-theme-light && npm run smui-theme-dark",
-    "smui-theme-light": "smui-theme compile public/smui.css -i src/theme",
-    "smui-theme-dark": "smui-theme compile public/smui-dark.css -i src/theme/dark"
+    "prepare": "npm run smui-theme-light",
+    "smui-theme-light": "smui-theme compile public/smui.css -i src/theme"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.6",
