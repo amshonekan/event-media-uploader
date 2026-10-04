@@ -72,7 +72,7 @@
     isUploading = false;
     statusText = failedCount
       ? `${failedCount} file${failedCount === 1 ? '' : 's'} need another try.`
-      : 'Everything is safely on its way! Thank you for your contribution 🎔';
+      : 'Everything is safely on its way! Thank you for your contribution 🤍';
     statusKind = failedCount ? 'error' : 'success';
     snackbar?.open();
   }
